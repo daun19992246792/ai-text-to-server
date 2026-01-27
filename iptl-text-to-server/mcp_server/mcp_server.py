@@ -3,7 +3,7 @@ import json
 from enum import Enum
 from typing import get_origin, get_args
 
-from fastapi import HTTPException
+from fastapi import HTTPException, FastAPI
 from mcp import types
 from mcp.server import Server
 from mcp.server.sse import SseServerTransport
@@ -13,7 +13,6 @@ from starlette.applications import Starlette
 from starlette.responses import Response
 from starlette.routing import Route, Mount
 
-from env import THREAD_LOCAL_DATA, get_iportal_token
 from mcp_tools.tools_type import ToolsType
 from tool import current_locals
 
@@ -32,7 +31,6 @@ class MCPServer:
         @server.call_tool()
         async def call_tool(name: str, arguments: dict) -> list[
             types.TextContent | types.ImageContent | types.EmbeddedResource]:
-            THREAD_LOCAL_DATA.token = arguments.get("token") or get_iportal_token()
             if "token" in arguments:
                 del arguments["token"]
 
@@ -112,12 +110,10 @@ class MCPServer:
         # 将结果序列化为 JSON 字符串
         text = json.dumps(result, default=custom_serializer, ensure_ascii=False)
         return text
-def build_mcp_server_app() -> Starlette:
+def build_mcp_server_app(app: FastAPI) -> Starlette:
     routes = []
     for tools_type in TOOLS_TYPES:
         mcp_server = MCPServer(tools_type)
         routes += mcp_server.get_routes()
-    app = Starlette(
-        routes=routes,
-    )
+    app.routes.extend(routes)
     return app

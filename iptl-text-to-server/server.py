@@ -1,13 +1,58 @@
-import click
-import uvicorn
-from fastapi import FastAPI, HTTPException
+from fastapi import HTTPException
 
 from mcp_server.mcp_server import build_mcp_server_app
 from resources.config.config import DatabaseConfig, ModelConfig
-from resources.config.config_save import update_global_db_config, get_global_db_config
+from resources.config.config_save import update_global_db_config, get_global_db_config, update_global_model_config, \
+    get_global_model_config
+
+import click
+import uvicorn
+from fastapi import FastAPI
+from fastapi.openapi.docs import (
+    get_redoc_html,
+    get_swagger_ui_html
+)
+from fastapi.staticfiles import StaticFiles
+from starlette.responses import RedirectResponse
+from pathlib import Path
 
 # 初始化FastAPI应用
-app = FastAPI(title="MCP Server", version="1.0")
+app = FastAPI(
+    debug=True,
+    docs_url=None,
+    redoc_url=None,
+    title="Text2SQL"
+)
+app.mount('/static-doc', StaticFiles(directory=Path(__file__).resolve().parent / "static-doc", html=True),
+          name='static-doc')
+
+
+@app.get("/", include_in_schema=False)
+async def index():
+    return RedirectResponse(url='/docs')
+
+
+@app.get("/docs", include_in_schema=False)
+async def custom_swagger_ui_html():
+    return get_swagger_ui_html(
+        openapi_url=app.openapi_url,
+        title=app.title + " - Swagger UI",
+        oauth2_redirect_url=app.swagger_ui_oauth2_redirect_url,
+        swagger_js_url="/static-doc/swagger-ui-bundle.js",
+        swagger_css_url="/static-doc/swagger-ui.css",
+        swagger_favicon_url="/static-doc/favicon.png"
+    )
+
+
+@app.get("/redoc", include_in_schema=False)
+async def redoc_html():
+    return get_redoc_html(
+        openapi_url=app.openapi_url,
+        title=app.title + " - ReDoc",
+        redoc_js_url="/static-doc/redoc.standalone.js",
+        redoc_favicon_url="/static-doc/favicon.png",
+        with_google_fonts=False
+    )
 
 # 新增URL接口：接收并写入数据库配置
 @app.post("/api/text2/config/database", summary="更新数据库连接配置")
@@ -68,7 +113,7 @@ async def update_model_config(config: ModelConfig):
     """
     try:
         # 将Pydantic模型转为字典并写入配置文件
-        write_model_config(config.dict())
+        update_global_model_config(config.dict())
         return {"code": 200, "message": "模型配置写入成功", "data": config.dict()}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
@@ -88,7 +133,7 @@ async def get_model_config():
 
 @click.command(help="启动服务")
 @click.option(
-    "-h"
+    "-h",
     "--host",
     "host",
     help="host",
@@ -103,8 +148,8 @@ async def get_model_config():
     default=8012
 )
 def main(host:str, port:int):
-    app = build_mcp_server_app()
-    uvicorn.run(app, host=host, port=port)
+    mcp_app = build_mcp_server_app(app)
+    uvicorn.run(mcp_app, host=host, port=port)
 
 
 if __name__ == "__main__":

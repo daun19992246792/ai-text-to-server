@@ -9,6 +9,7 @@ _config_lock = threading.Lock()
 
 # 私有变量：存储数据库配置（仅内部可修改）
 _db_config: Dict[str, Any] = {}
+_model_config: Dict[str, Any] = {}
 
 
 # 封装为只读数据类（强化不可修改特性）
@@ -29,7 +30,7 @@ class ReadOnlyDBConfig:
             "username": self.username,
             "password": "******" if self.password else "",
             "database_name": self.database_name,
-            "database_type": self.type
+            "database_type": self.database_type
         }
 
 @dataclass(frozen=True)  # frozen=True 使实例属性不可修改
@@ -86,8 +87,8 @@ def get_global_db_config() -> ReadOnlyDBConfig | None:
 
 def update_global_model_config(config: Dict[str, Any]) -> None:
     """
-    更新全局数据库配置（唯一可修改入口）
-    :param config: 数据库连接参数字典
+    更新全局模型配置（唯一可修改入口）
+    :param config: 模型连接参数字典
     """
     global _model_config
 
@@ -103,13 +104,16 @@ def update_global_model_config(config: Dict[str, Any]) -> None:
         _model_config = config.copy()
 
 
-def get_global_dmodel_config() -> ReadOnlyModelConfig | None:
+def get_global_model_config() -> ReadOnlyModelConfig | None:
     """
-    获取只读的全局数据库配置（外部唯一读取入口）
+    获取只读的全局模型配置（外部唯一读取入口）
     :return: 只读配置实例，未配置则返回None
     """
     with _config_lock:
         if not _model_config:
             return None
         # 返回不可修改的实例
-        return ReadOnlyModelConfig(**_db_config)
+        return ReadOnlyModelConfig(
+            basic_model=Model(**_model_config.get("basic_model")),
+            embedding_model=Model(**_model_config.get("embedding_model")),
+        )
