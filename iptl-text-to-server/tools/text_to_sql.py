@@ -71,7 +71,6 @@ class Text2SQLService:
             self._initialize()
 
             generated_sql = self._engine.query(query)
-            print(f'LLM 生成的SQL: {generated_sql}')
             dialect = self._engine.db_manager.sql_database.dialect
 
             mapping = {
@@ -83,19 +82,23 @@ class Text2SQLService:
             dialect = mapping.get(dialect.lower(), dialect)
 
             validated_sql = self._checker.validata(generated_sql, dialect=dialect)
-            print(f'校验后的SQL: {validated_sql}')
 
             results = self._executor.execute(validated_sql)
 
-            # 截断结果中的过长字符串
+            # 截断结果中的过长字符串, 并且截断行数
             truncated_results = []
-            for row in results:
+            for row in results[:100]:
                 new_row = {}
                 for k, v in row.items():
-                    if isinstance(v, str) and len(v) > 100:
-                        new_row[k] = v[:100] + "..."
+                    if isinstance(v, (str, int, float, bool, type(None))):
+                        val = v
                     else:
-                        new_row[k] = v
+                        val = str(v)
+
+                    if isinstance(v, str) and len(v) > 100:
+                        new_row[k] = val[:100] + "..."
+                    else:
+                        new_row[k] = val
                 truncated_results.append(new_row)
 
             return truncated_results

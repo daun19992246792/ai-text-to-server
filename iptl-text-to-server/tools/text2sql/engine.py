@@ -33,7 +33,6 @@ class Text2SQLEngine:
         Settings.llm = self.llm
 
         # 2.设置 Database
-        print(self.config.db_uri)
         self.db_manager = DatabaseManager(
             db_uri=self.config.db_uri,
             include_tables=self.config.include_tables,

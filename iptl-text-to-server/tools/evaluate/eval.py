@@ -20,7 +20,9 @@ except ImportError as e:
 
 from tools.text_to_sql import Text2SQLService
 
+
 def get_service() -> Text2SQLService:
+    # TODO: Please fill in your database configuration here
     db_type = ""
     db_user = ""
     db_password = ""
@@ -28,10 +30,11 @@ def get_service() -> Text2SQLService:
     db_port = ""
     db_name = ""
 
+    # TODO: Please fill in your Model configuration here
     llm_model_name = ""
     llm_api_key = ""
     llm_api_base = ""
-    
+
     embedding_model_name = ""
     embedding_api_key = ""
     embedding_api_base = ""
@@ -42,9 +45,8 @@ def get_service() -> Text2SQLService:
         driver = "postgresql+psycopg2" if db_type == "postgresql" else "mysql+pymysql"
         db_uri = f"{driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
 
-    
     print(f"Using DB URI: {db_uri}")
-    
+
     config = Text2SQLConfig(db_uri=db_uri)
 
     if llm_model_name:
@@ -53,7 +55,7 @@ def get_service() -> Text2SQLService:
         config.llm_api_key = llm_api_key
     if llm_api_base:
         config.llm_api_base = llm_api_base
-        
+
     if embedding_model_name:
         config.embedding_model_name = embedding_model_name
     if embedding_api_key:
@@ -62,15 +64,16 @@ def get_service() -> Text2SQLService:
         config.embedding_api_base = embedding_api_base
 
     service = Text2SQLService()
-    
+
     from tools.sql_executor import SQLExecutor
     from tools.sql_vaildator import SQLSecurityChecker
-    
+
     service._engine = Text2SQLEngine(config)
     service._executor = SQLExecutor(service._engine.db_manager.engine)
     service._checker = SQLSecurityChecker(max_limit=50)
-    
+
     return service
+
 
 def evaluate():
     dataset_path = os.path.join(current_dir, 'eval_dataset.json')
@@ -89,17 +92,17 @@ def evaluate():
         return
 
     print(f"Starting evaluation on {len(dataset)} items...")
-    
+
     passed_count = 0
 
     print("Pre-executing Expected SQLs to validate dataset...")
     valid_dataset = []
-    
+
     for item in dataset:
         expected_sql = item.get('expected_sql')
         if not expected_sql:
             continue
-            
+
         try:
             dialect = service._engine.db_manager.sql_database.dialect
             mapping = {
@@ -109,36 +112,36 @@ def evaluate():
                 "oracle": "oracle",
             }
             dialect = mapping.get(dialect.lower(), dialect)
-            
+
             validated_expected_sql = service._checker.validata(expected_sql, dialect=dialect)
 
             expected_result_dicts = service._executor.execute(validated_expected_sql)
-            
+
             cached_result = []
             if expected_result_dicts:
                 for row in expected_result_dicts:
                     cached_result.append(tuple(row.values()))
-            
+
             item['_expected_result_cache'] = cached_result
             valid_dataset.append(item)
         except Exception as e:
             print(f"Skipping ID {item.get('id')}: Expected SQL failed - {e}")
             item['status'] = 'Error'
             item['error'] = f"Expected SQL Execution Failed: {str(e)}"
-    
+
     print(f"Valid items for prediction: {len(valid_dataset)}/{len(dataset)}")
-    
+
     for item in valid_dataset:
         print(f"\nProcessing ID: {item.get('id')}")
         query = item.get('query')
-        
+
         if not query:
             continue
 
         print(f"Query: {query}")
 
         try:
-            
+
             print("--- Generating SQL ---")
             generated_sql_raw = service._engine.query(query)
             generated_sql_raw = str(generated_sql_raw).strip()
@@ -148,13 +151,12 @@ def evaluate():
                 if first_newline != -1:
                     last_backticks = generated_sql_raw.rfind("```")
                     if last_backticks > first_newline:
-                        generated_sql_raw = generated_sql_raw[first_newline+1:last_backticks].strip()
+                        generated_sql_raw = generated_sql_raw[first_newline + 1:last_backticks].strip()
                     else:
                         generated_sql_raw = generated_sql_raw.strip("`").strip()
                 else:
                     generated_sql_raw = generated_sql_raw.strip("`").strip()
 
-            # Validate
             dialect = service._engine.db_manager.sql_database.dialect
             mapping = {
                 "postgresql": "postgres",
@@ -164,13 +166,12 @@ def evaluate():
             }
             dialect = mapping.get(dialect.lower(), dialect)
             validated_sql = service._checker.validata(generated_sql_raw, dialect=dialect)
-            
+
             item['generated_sql'] = validated_sql
             print(f"Final SQL: {validated_sql}")
-            
-            # Execute Validated SQL
+
             generated_result_dicts = service._executor.execute(validated_sql)
-            
+
         except Exception as e:
             print(f"Error in Text2SQL pipeline: {e}")
             item['error'] = f"Pipeline Error: {str(e)}"
@@ -179,23 +180,22 @@ def evaluate():
 
         try:
             expected_list = item.get('_expected_result_cache', [])
-            
+
             generated_list = []
             if generated_result_dicts:
                 for row in generated_result_dicts:
                     generated_list.append(tuple(row.values()))
-            
+
             if len(expected_list) != len(generated_list):
-                 is_match = False
+                is_match = False
             else:
-                 # Check content
-                 is_match = True
-                 for exp_row, gen_row in zip(expected_list, generated_list):
-                     exp_str = [str(x) for x in exp_row]
-                     gen_str = [str(x) for x in gen_row]
-                     if exp_str != gen_str:
-                         is_match = False
-                         break
+                is_match = True
+                for exp_row, gen_row in zip(expected_list, generated_list):
+                    exp_str = [str(x) for x in exp_row]
+                    gen_str = [str(x) for x in gen_row]
+                    if exp_str != gen_str:
+                        is_match = False
+                        break
 
             if is_match:
                 print("Status: Pass")
@@ -225,6 +225,7 @@ def evaluate():
         print("Results saved to eval_dataset.json")
     except Exception as e:
         print(f"Error saving results: {e}")
+
 
 if __name__ == "__main__":
     evaluate()

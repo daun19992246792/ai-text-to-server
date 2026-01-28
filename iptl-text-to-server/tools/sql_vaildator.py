@@ -46,7 +46,7 @@ class SQLSecurityChecker:
         if optimize:
             expression = self._optimize_query(expression)
 
-        expression = self._apply_limit_optimization(expression)
+        # expression = self._apply_limit_optimization(expression)
 
         return expression.sql(dialect=dialect)
 

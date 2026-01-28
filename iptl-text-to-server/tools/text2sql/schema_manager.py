@@ -23,7 +23,7 @@ class SchemaManager:
         if self.db_manager.config:
             max_workers = self.db_manager.config.table_description_threads
 
-        print(max_workers)
+        # print(max_workers)
         def _process_table(table_name: str) -> SQLTableSchema:
             """处理单个表的辅助函数"""
             # 获取详细描述(DDL + 键 + 注释)
