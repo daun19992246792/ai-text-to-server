@@ -2,6 +2,7 @@ from typing import Optional, Dict, Any, List
 import os
 from tools.text2sql.config import Text2SQLConfig
 from tools.text2sql.engine import Text2SQLEngine
+from tools.text2sql.factory import build_text2sql_config_from_global
 from tools.sql_vaildator import SQLSecurityChecker
 from tools.sql_executor import SQLExecutor
 from resources.config.config_save import get_global_db_config, get_global_model_config
@@ -19,43 +20,7 @@ class Text2SQLService:
         if self._engine is not None:
             return
 
-        db_config = get_global_db_config()
-        db_uri = ""
-        
-        if db_config:
-            db_type = str(db_config.database_type)
-            driver_map = {
-                "PostgreSQL": "postgresql+psycopg2",
-                "MySQL": "mysql+pymysql",
-                "Oracle": "oracle+cx_oracle",
-                "SQLServer ": "mssql+pyodbc",
-                "SQLite": "sqlite"
-            }
-            scheme = driver_map.get(db_type, "postgresql+psycopg2")
-            
-            if scheme == "sqlite":
-                 db_uri = f"sqlite:///{db_config.database_name}"
-            else:
-                 db_uri = f"{scheme}://{db_config.username}:{db_config.password}@{db_config.host}:{db_config.port}/{db_config.database_name}"
-        else:
-             db_uri = os.getenv("DB_URI", "")
-        
-        if not db_uri:
-             raise ValueError("Database configuration is missing. Please configure the database connection.")
-
-        config = Text2SQLConfig(db_uri=db_uri)
-        
-        model_config = get_global_model_config()
-        if model_config:
-             if model_config.basic_model:
-                config.llm_model_name = model_config.basic_model.model
-                config.llm_api_key = model_config.basic_model.api_key
-                config.llm_api_base = model_config.basic_model.base_url
-             
-             if model_config.embedding_model:
-                config.embedding_model_name = model_config.embedding_model.model
-                config.embedding_api_key = model_config.embedding_model.api_key
-                config.embedding_api_base = model_config.embedding_model.base_url
+        config = build_text2sql_config_from_global()
         
         self._engine = Text2SQLEngine(config)
 
@@ -81,8 +46,10 @@ class Text2SQLService:
             }
             dialect = mapping.get(dialect.lower(), dialect)
 
+            print(f"LLM生成的SQL: {generated_sql}")
             validated_sql = self._checker.validata(generated_sql, dialect=dialect)
 
+            print(f"验证后的SQL: {validated_sql}")
             results = self._executor.execute(validated_sql)
 
             # 截断结果中的过长字符串, 并且截断行数

@@ -1,4 +1,4 @@
-from .postgresql import DIALECT_KNOWLEDGE_MAP
+from .knowledge import DIALECT_KNOWLEDGE_MAP
 
 def get_dialect_knowledge(dialect_name: str) -> str:
     """

@@ -1,7 +1,9 @@
 from typing import List, Dict, Optional
 import os
 import json
+import logging
 import chromadb
+from filelock import FileLock
 from llama_index.core import VectorStoreIndex, Settings
 from llama_index.core.objects import SQLTableSchema, SQLTableNodeMapping, ObjectIndex
 from llama_index.core.retrievers import BaseRetriever
@@ -12,6 +14,8 @@ from llama_index.core import StorageContext
 from .config import Text2SQLConfig
 from .db_manager import DatabaseManager
 from .schema_manager import SchemaManager
+
+logger = logging.getLogger(__name__)
 
 class RetrieverManager:
     def __init__(self, config: Text2SQLConfig, db_manager: DatabaseManager):
@@ -42,29 +46,42 @@ class RetrieverManager:
         return schemas
 
     def setup_table_retriever(self) -> BaseRetriever:
-        db = chromadb.PersistentClient(path=self.config.chroma_db_path)
-        chromadb_collection = db.get_or_create_collection(self.config.chroma_collection_name)
-        vector_store = ChromaVectorStore(chroma_collection=chromadb_collection)
-        table_node_mapping = SQLTableNodeMapping(self.db_manager.sql_database)
+        # 确保目录存在
+        os.makedirs(self.config.chroma_db_path, exist_ok=True)
+        
+        # 使用文件锁防止并发构建导致向量库损坏
+        lock_path = os.path.join(self.config.chroma_db_path, "index_build.lock")
+        lock = FileLock(lock_path)
 
-        if chromadb_collection.count() == 0:
-            schemas = self._build_and_persist_schemas()
-            storage_context = StorageContext.from_defaults(vector_store=vector_store)
-            obj_index = ObjectIndex.from_objects(
-                schemas,
-                table_node_mapping,
-                index_cls=VectorStoreIndex,
-                storage_context=storage_context,
-            )
-        else:
-            index = VectorStoreIndex.from_vector_store(
-                vector_store,
-            )
-            obj_index = ObjectIndex.from_objects_and_index(
-                [],
-                index,
-                table_node_mapping,
-            )
+        with lock:
+            db = chromadb.PersistentClient(path=self.config.chroma_db_path)
+            chromadb_collection = db.get_or_create_collection(self.config.chroma_collection_name)
+            vector_store = ChromaVectorStore(chroma_collection=chromadb_collection)
+            table_node_mapping = SQLTableNodeMapping(self.db_manager.sql_database)
+
+            # 检查索引是否已存在 (通过 collection 计数或 schema 缓存文件)
+            # 这里的 count() 检查是最直接的
+            if chromadb_collection.count() == 0:
+                logger.info(f"Initializing vector index at {self.config.chroma_db_path}...")
+                schemas = self._build_and_persist_schemas()
+                storage_context = StorageContext.from_defaults(vector_store=vector_store)
+                obj_index = ObjectIndex.from_objects(
+                    schemas,
+                    table_node_mapping,
+                    index_cls=VectorStoreIndex,
+                    storage_context=storage_context,
+                )
+                logger.info("Vector index built successfully.")
+            else:
+                logger.info(f"Loading existing vector index from {self.config.chroma_db_path}...")
+                index = VectorStoreIndex.from_vector_store(
+                    vector_store,
+                )
+                obj_index = ObjectIndex.from_objects_and_index(
+                    [], # 空列表，因为我们是从 existing index 加载
+                    index,
+                    table_node_mapping,
+                )
 
         return obj_index.as_retriever(similarity_top_k=self.config.top_k_tables)
 
@@ -89,9 +106,11 @@ class RetrieverManager:
             try:
                 documents = []
                 from sqlalchemy import text
+                # 增强健壮性：处理连接失败
                 with self.db_manager.engine.connect() as conn:
                     for col in columns:
-                        query = text(f'SELECT DISTINICT {col} FROM {table_name} WHERE {col} is NOT NULL')
+                        # 修正拼写错误 (虽然原代码看似正确，但确保是 DISTINCT)
+                        query = text(f'SELECT DISTINCT {col} FROM {table_name} WHERE {col} is NOT NULL')
                         result = conn.execute(query)
                         for row in result:
                             val = str(row[0])
@@ -108,7 +127,7 @@ class RetrieverManager:
                 row_retrievers[table_name] = index.as_retriever()
 
             except Exception as e:
-                print(f'Error building row retriever for {table_name}: {e}')
+                logger.error(f'Error building row retriever for {table_name}: {e}', exc_info=True)
 
         return row_retrievers if row_retrievers else None
 

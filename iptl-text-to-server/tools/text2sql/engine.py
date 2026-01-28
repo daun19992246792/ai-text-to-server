@@ -36,7 +36,6 @@ class Text2SQLEngine:
         self.db_manager = DatabaseManager(
             db_uri=self.config.db_uri,
             include_tables=self.config.include_tables,
-            cache_dir=self.config.chroma_db_path,
             config=self.config,
             llm=self.llm
         )
@@ -44,8 +43,6 @@ class Text2SQLEngine:
         # 3.设置 Retrievers
         self.retriever_manager = RetrieverManager(self.config, self.db_manager)
         self.table_retriever = self.retriever_manager.setup_table_retriever()
-        self.rows_retrievers = self.retriever_manager.build_row_retrievers()
-        self.cols_retrievers = self.retriever_manager.build_col_retrievers()
 
         #  构造完整的 Prompt
         dialect = self.db_manager.sql_database.dialect
@@ -57,13 +54,10 @@ class Text2SQLEngine:
         self.query_engine = SQLTableRetrieverQueryEngine(
             sql_database=self.db_manager.sql_database,
             table_retriever=self.table_retriever,
-            # rows_retrievers=self.rows_retrievers,
-            # cols_retrievers=self.cols_retrievers,
             text_to_sql_prompt=text_to_sql_prompt,
             response_synthesis_prompt=RESPONSE_SYNTHESIS_IMPL_PROMPT,
             llm=self.llm,
             synthesize_response=False, # 是否对SQL查询结果进行总结
-            # verbose=True,
             sql_only=True, # 只生成SQL不执行
         )
 

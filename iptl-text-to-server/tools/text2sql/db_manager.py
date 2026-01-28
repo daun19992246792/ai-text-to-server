@@ -11,12 +11,12 @@ from .dialects import get_dialect_knowledge
 class DatabaseManager:
     """负责管理数据库连接和元数据提取"""
 
-    def __init__(self, db_uri: str, include_tables: Optional[List[str]] = None, cache_dir: Optional[str] = None, config: Text2SQLConfig = None, llm: Optional[OpenAILike] = None):
+    def __init__(self, db_uri: str, include_tables: Optional[List[str]] = None, config: Text2SQLConfig = None, llm: Optional[OpenAILike] = None):
         self.db_uri = db_uri
         self.include_tables = include_tables
-        self.cache_dir = cache_dir
         self.config = config
         self.engine: Engine = create_engine(db_uri)
+        self.cache_dir = config.chroma_db_path if config else None
         
         # 优先使用传入的 llm 实例
         if llm:

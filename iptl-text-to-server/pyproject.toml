@@ -21,7 +21,9 @@ dependencies = [
     "llama-index-embeddings-openai>=0.5.1",
     "llama-index-embeddings-openai-like>=0.2.2",
     "psycopg2>=2.9.11",
-    "sqlglot>=28.6.0"
+    "sqlglot>=28.6.0",
+    "cachetools>=5.3.3",
+    "filelock>=3.13.1"
 ]
 
 [project.optional-dependencies]
