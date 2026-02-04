@@ -21,7 +21,7 @@ def get_text_to_sql_template() -> PromptTemplate:
 
 # Dialect Knowledge Logic
 def load_dialect_template(filename):
-    path = os.path.join(current_dir, 'templates', 'dialects', filename)
+    path = os.path.join(current_dir, 'prompts', 'dialects', filename)
     try:
         with open(path, 'r', encoding='utf-8') as f:
             return f.read()

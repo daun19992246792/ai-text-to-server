@@ -73,45 +73,9 @@ class Text2SQLEngine:
             sql_only=True,
         )
 
-    def apply_config(self, config: Text2SQLConfig):
-        llm_changed = (
-            self.config.llm_model_name != config.llm_model_name
-            or self.config.llm_api_key != config.llm_api_key
-            or self.config.llm_api_base != config.llm_api_base
-        )
-        embedding_changed = (
-            self.config.embedding_model_name != config.embedding_model_name
-            or self.config.embedding_api_key != config.embedding_api_key
-            or self.config.embedding_api_base != config.embedding_api_base
-        )
-        prompt_changed = self._get_prompt_text() != self._prompt_text
-
-        if llm_changed:
-            self.llm = OpenAILike(
-                model=config.llm_model_name,
-                api_key=config.llm_api_key,
-                api_base=config.llm_api_base,
-                context_window=32768,
-                max_tokens=4096,
-                temperature=0.1,
-                timeout=300.0,
-                reuse_client=False,
-                is_chat_model=True,
-            )
-            Settings.llm = self.llm
-            self.db_manager.llm = self.llm
-
-        if embedding_changed:
-            self.embed_model = OpenAILikeEmbedding(
-                model_name=self.config.embedding_model_name,
-                api_key=self.config.embedding_api_key,
-                api_base=self.config.embedding_api_base
-            )
-
-        if llm_changed or embedding_changed or prompt_changed:
+    def update_prompt(self):
+        if self._get_prompt_text() != self._prompt_text:
             self._build_query_engine()
-
-        self.config = config
 
 
     def query(self, query_str: str) -> str:
@@ -123,5 +87,4 @@ class Text2SQLEngine:
     def get_prompts(self) -> dict:
         """返回当前使用的提示词"""
         return self.query_engine.get_prompts()
-
 

@@ -17,14 +17,13 @@ class Text2SQLService:
         self._checker: Optional[SQLSecurityChecker] = None
 
     def _initialize(self):
-        config = build_text2sql_config_from_global()
-        self._engine = EnginePool().get_engine(config)
-        self._engine.apply_config(config)
-
-        if self._executor is None or self._checker is None or self._engine_config_id != config.config_id:
+        if self._engine is None:
+            config = build_text2sql_config_from_global()
+            self._engine = EnginePool().get_engine(config)
             self._executor = SQLExecutor(self._engine.db_manager.engine)
             self._checker = SQLSecurityChecker(max_limit=50)
             self._engine_config_id = config.config_id
+        self._engine.update_prompt()
 
     def query(self, query: str) -> Union[List[Dict[str, Any]], Dict[str, Any]]:
         """
@@ -44,7 +43,7 @@ class Text2SQLService:
             }
             dialect = mapping.get(dialect.lower(), dialect)
 
-            # print(f"LLM生成的SQL: {generated_sql}")
+            print(f"LLM生成的SQL: {generated_sql}")
             validated_sql = self._checker.validata(generated_sql, dialect=dialect)
 
             # print(f"验证后的SQL: {validated_sql}")

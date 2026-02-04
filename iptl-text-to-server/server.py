@@ -3,7 +3,7 @@ from fastapi import HTTPException, BackgroundTasks
 from mcp_server.mcp_server import build_mcp_server_app
 from resources.config.config import DatabaseConfig, ModelConfig, PromptsConfig
 from resources.config.config_save import update_global_db_config, get_global_db_config, update_global_model_config, \
-    get_global_model_config, update_global_prompts_config, get_global_prompts_config
+    get_global_model_config, update_global_prompts_config, get_global_prompts_config, validate_model, validate_db_connection
 from resources.text2sql.factory import warm_up_engine_task
 import click
 import uvicorn
@@ -58,16 +58,31 @@ async def redoc_html():
 @app.post("/api/text2/config/database", summary="更新数据库连接配置")
 async def update_database_config(config: DatabaseConfig, background_tasks: BackgroundTasks):
     """
-    接收数据库连接信息并写入配置文件，并触发异步预热
+    接收数据库连接信息并写入配置文件
+    请求示例：
+    POST http://localhost:8000/api/text2/config/database
+    Body (JSON):
+    {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "username": "root",
+        "password": "123456",
+        "database_name": "mcp_db",
+        "database_type": "Postgres"
+    }
     """
     try:
+        config_dict = config.model_dump()
+        is_valid, msg = validate_db_connection(config_dict)
+        if not is_valid:
+            raise HTTPException(status_code=400, detail=msg)
         # 将Pydantic模型转为字典并写入配置文件
-        update_global_db_config(config.dict())
+        update_global_db_config(config_dict)
         
         # 触发异步预热
         background_tasks.add_task(warm_up_engine_task)
         
-        return {"code": 200, "message": "数据库配置写入成功，正在后台初始化引擎...", "data": config.dict()}
+        return {"code": 200, "message": "数据库配置写入成功，正在后台初始化引擎...", "data": config_dict}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
     except Exception as e:
@@ -81,23 +96,42 @@ async def get_database_config():
     return {
         "code": 200,
         "message": "获取配置成功",
-        "data": config.to_dict()
+        "data": config.model_dump()
     }
 
 # 新增URL接口：接收并写入数据库配置
 @app.post("/api/text2/config/model", summary="更新模型配置")
 async def update_model_config(config: ModelConfig, background_tasks: BackgroundTasks):
     """
-    接收模型配置并写入配置文件，并触发异步预热（如果数据库已配置）
+    接收数据库连接信息并写入配置文件
+    请求示例：
+    POST http://localhost:8000/api/text2/config/model
+    Body (JSON):
+    {
+        "basic_model": {
+            "model": "Qwen"
+            "base_url": "http://ip:8000/v1"
+            "api_key": "gpustack_xxx"
+        },
+        "embedding_model": {
+            "model": "bge-m3"
+            "base_url": "http://ip:8000/v1"
+            "api_key": "gpustack_xxx"
+        },
+    }
     """
     try:
+        config_dict = config.model_dump()
+        is_valid, msg = validate_model(config_dict)
+        if not is_valid:
+            raise HTTPException(status_code=400, detail=msg)
         # 将Pydantic模型转为字典并写入配置文件
-        update_global_model_config(config.dict())
+        update_global_model_config(config_dict)
         
         # 尝试触发预热（如果DB也配置了的话）
         background_tasks.add_task(warm_up_engine_task)
         
-        return {"code": 200, "message": "模型配置写入成功", "data": config.dict()}
+        return {"code": 200, "message": "模型配置写入成功", "data": config_dict}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
     except Exception as e:
@@ -111,14 +145,33 @@ async def get_model_config():
     return {
         "code": 200,
         "message": "获取配置成功",
-        "data": config.to_dict()
+        "data": config.model_dump()
     }
+
+@app.post("/api/text2/config/prompts", summary="更新模型提示词配置")
+async def update_prompts_config(config: PromptsConfig, background_tasks: BackgroundTasks):
+    """
+    接收模型提示词配置并写入配置文件，并触发异步预热
+    """
+    try:
+        config_dict = config.model_dump()
+        # 将Pydantic模型转为字典并写入配置文件
+        update_global_prompts_config(config_dict)
+        
+        # 触发异步预热
+        background_tasks.add_task(warm_up_engine_task)
+        
+        return {"code": 200, "message": "模型提示词配置写入成功", "data": config_dict}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"服务器错误: {str(e)}")
 
 @app.get("/api/text2/config/prompts", summary="获取模型提示词配置")
 async def get_prompts_config():
     config = get_global_prompts_config()
     if config:
-        data = config.to_dict()
+        data = config.model_dump()
     else:
         prompt_path = Path(__file__).resolve().parent / "resources" / "text2sql" / "prompts" / "text_to_sql.md"
         try:
@@ -134,24 +187,6 @@ async def get_prompts_config():
         "message": "获取配置成功",
         "data": data
     }
-
-@app.post("/api/text2/config/prompts", summary="更新模型提示词配置")
-async def update_prompts_config(config: PromptsConfig, background_tasks: BackgroundTasks):
-    """
-    接收模型提示词配置并写入配置文件，并触发异步预热
-    """
-    try:
-        # 将Pydantic模型转为字典并写入配置文件
-        update_global_prompts_config(config.dict())
-        
-        # 触发异步预热
-        background_tasks.add_task(warm_up_engine_task)
-        
-        return {"code": 200, "message": "模型提示词配置写入成功", "data": config.dict()}
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"服务器错误: {str(e)}")
 
 @click.command(help="启动服务")
 @click.option(

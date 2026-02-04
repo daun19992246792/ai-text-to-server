@@ -1,6 +1,8 @@
-from enum import Enum
 import os
-from pydantic import BaseModel, Field
+from enum import Enum
+from pydantic import Field
+
+from pydantic import BaseModel
 
 
 def _load_default_prompt():
@@ -19,22 +21,38 @@ def _load_default_prompt():
 
 _DEFAULT_PROMPT = _load_default_prompt()
 
+class DatabaseDriver(Enum):
+    PostgreSQL = "postgresql+psycopg2"
+    MySQL = "mysql+pymysql"
+    Oracle = "oracle+cx_oracle"
+    SQLServer  = "mssql+pyodbc"
+    # SQLite = "sqlite"
+
+    def __str__(self):
+        return self.name
 
 class DatabaseType(Enum):
     PostgreSQL = "PostgreSQL"
     MySQL = "MySQL"
     Oracle = "Oracle"
-    SQLServer  = "SQLServer "
-    SQLite = "SQLite"
+    SQLServer  = "SQLServer"
+    # SQLite = "SQLite"
 
     def __str__(self):
         return self.name
 
+    def get_driver(self):
+        """当前DatabaseType对应的DatabaseDriver"""
+        try:
+            return DatabaseDriver[self.name].value
+        except KeyError:
+            raise ValueError(f"{self.name} 无对应的DatabaseDriver")
+
 class DatabaseConfig(BaseModel):
     host: str
-    port: int = 3306
+    port: int
     username: str
-    password: str = ""
+    password: str
     database_name: str
     database_type: DatabaseType
 
