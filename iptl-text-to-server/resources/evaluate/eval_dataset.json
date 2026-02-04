@@ -1,0 +1,606 @@
+[
+  {
+    "id": "1",
+    "query": "查询北京市所有小学的数量",
+    "generated_sql": "SELECT COUNT(*) AS 小学数量 FROM \"smp1261973732_北京市小学分布\"",
+    "status": "Pass"
+  },
+  {
+    "id": "2",
+    "query": "查询上海市景点总数",
+    "generated_sql": "SELECT COUNT(*) AS 景点总数 FROM \"smp171879899_上海市景点\"",
+    "status": "Pass"
+  },
+  {
+    "id": "3",
+    "query": "查询北京住宅小区分布中单价最高的小区名称",
+    "generated_sql": "SELECT \"小区名\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"单价\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "4",
+    "query": "查询成都二手房价中参考价最低的楼盘",
+    "generated_sql": "SELECT \"楼盘名称\", \"参考价\" FROM \"smp1652344996_成都二手房价\" ORDER BY \"参考价\" LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "5",
+    "query": "统计上海市景点中红色旅游景点的数量",
+    "generated_sql": "SELECT COUNT(*) AS 红色旅游景点数量 FROM \"smp171879899_上海市景点\" WHERE \"种类\" = '红色旅游'",
+    "status": "Pass"
+  },
+  {
+    "id": "6",
+    "query": "查询北京市地铁交通线路的总数",
+    "generated_sql": "SELECT COUNT(*) AS 总数 FROM \"smp968461758_北京市轨道交通线路\"",
+    "status": "Pass"
+  },
+  {
+    "id": "7",
+    "query": "查询上海美食数据中评分最高的店名",
+    "generated_sql": "SELECT \"店名\" FROM \"smp410767701_上海美食1\" ORDER BY \"评分\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "8",
+    "query": "统计北京市行政区划的区县数量",
+    "generated_sql": "SELECT COUNT(*) AS 区县数量 FROM \"smp443066686_北京市行政区划\" WHERE \"level\" = 'district'",
+    "status": "Pass"
+  },
+  {
+    "id": "9",
+    "query": "查询成都市行政区划中所有区县名称",
+    "generated_sql": "SELECT \"DISTNAME\" FROM \"smp1165309426_成都市行政区划\" WHERE \"CITYNAME\" = '成都市' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "10",
+    "query": "查询四川云闪付商户分布中所有不重复的城市",
+    "generated_sql": "SELECT DISTINCT \"城市\" FROM \"smp1540391602_四川云闪付商户分布\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "11",
+    "query": "查询京津土地利用面中面积最大的一条记录",
+    "generated_sql": "SELECT \"Area\", \"smpid\", \"SmUserID\", \"geometry\", \"LANDTYPE\", \"Area_1\" FROM \"smp1052167523_京津土地利用面\" ORDER BY \"Area\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "12",
+    "query": "统计中国2009各省GDP数据中有多少个省份",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1495180646_Chinese2009ProvincialGDP\" WHERE \"GDP_2009\" > 0 AND NOT \"GDP_2009\" IS NULL",
+    "status": "Pass"
+  },
+  {
+    "id": "13",
+    "query": "查询北京市小学分布中学校类别为'11小学'的数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1261973732_北京市小学分布\" WHERE \"学校类别\" = '11小学' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "14",
+    "query": "查询上海市行政区划中所有区名",
+    "generated_sql": "SELECT \"name\" FROM \"smp3210229_上海市行政区划\" WHERE \"level\" = 'district' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "15",
+    "query": "查询北京住宅小区中年代为2000年的小区数量",
+    "generated_sql": "SELECT COUNT(*) AS 小区数量 FROM \"smp650996573_北京住宅小区分布\" WHERE \"年代\" = 2000 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "16",
+    "query": "查询上海市景点中位于黄浦区的景点数量",
+    "generated_sql": "SELECT COUNT(*) AS 景点数量 FROM \"smp171879899_上海市景点\" WHERE \"区域\" = '黄浦区'",
+    "status": "Pass"
+  },
+  {
+    "id": "17",
+    "query": "查询成都二手房价中行政区为'双流区'的楼盘数量",
+    "generated_sql": "SELECT COUNT(*) AS 楼盘数量 FROM \"smp1652344996_成都二手房价\" WHERE \"行政区\" = '双流区'",
+    "status": "Pass"
+  },
+  {
+    "id": "18",
+    "query": "查询北京市轨道交通线路中标准名称包含'地铁'的线路数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp968461758_北京市轨道交通线路\" WHERE \"标准名称\" LIKE '%地铁%'",
+    "status": "Pass"
+  },
+  {
+    "id": "19",
+    "query": "查询北京住宅小区中户型为'2室1厅'的小区数量",
+    "generated_sql": "SELECT COUNT(*) AS 小区数量 FROM \"smp650996573_北京住宅小区分布\" WHERE \"户型\" = '2室1厅' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "20",
+    "query": "查询上海美食数据中评分为5.0的店铺数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp410767701_上海美食1\" WHERE \"评分\" = 5.0 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "21",
+    "query": "查询京津土地利用面中LANDTYPE为'水田'的记录数",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1052167523_京津土地利用面\" WHERE \"LANDTYPE\" = '水田'",
+    "status": "Pass"
+  },
+  {
+    "id": "22",
+    "query": "查询中国2009各省GDP中GDP_2009最高的省份名称",
+    "generated_sql": "SELECT \"NAME\" FROM \"smp1495180646_Chinese2009ProvincialGDP\" ORDER BY \"GDP_2009\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "23",
+    "query": "查询北京市小学分布中前5所小学的名称",
+    "generated_sql": "SELECT \"名称\" FROM \"smp1261973732_北京市小学分布\" ORDER BY \"smpid\" LIMIT 5",
+    "status": "Fail"
+  },
+  {
+    "id": "24",
+    "query": "查询上海市景点中种类为'景点'的数量",
+    "generated_sql": "SELECT COUNT(*) AS 景点数量 FROM \"smp171879899_上海市景点\" WHERE \"种类\" = '景点' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "25",
+    "query": "查询四川云闪付商户中场景为'正餐'的商户数量",
+    "generated_sql": "SELECT COUNT(*) AS 商户数量 FROM \"smp1540391602_四川云闪付商户分布\" WHERE \"场景\" = '正餐'",
+    "status": "Pass"
+  },
+  {
+    "id": "26",
+    "query": "查询成都市行政区划中Shape_Area最大的区县",
+    "generated_sql": "SELECT \"DISTNAME\" FROM \"smp1165309426_成都市行政区划\" ORDER BY \"Shape_Area\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "27",
+    "query": "查询北京住宅小区中面积最大的小区名称",
+    "generated_sql": "SELECT \"小区名\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"面积\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "28",
+    "query": "查询北京市行政区划中level为'district'的数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp443066686_北京市行政区划\" WHERE \"level\" = 'district' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "29",
+    "query": "查询上海市行政区划中adcode最小的区",
+    "generated_sql": "SELECT \"adcode\" FROM \"smp3210229_上海市行政区划\" ORDER BY \"adcode\" LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "30",
+    "query": "查询中国省会城市中经度最大的城市",
+    "generated_sql": "SELECT \"省会\" FROM \"smp511044525_ChineseProvincialCapitals\" ORDER BY \"longitude\" DESC LIMIT 1",
+    "status": "Pass"
+  },
+  {
+    "id": "31",
+    "query": "查询北京住宅小区中总价最高的前3个小区",
+    "generated_sql": "SELECT \"小区名\", \"总价\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"总价\" DESC LIMIT 3",
+    "status": "Pass"
+  },
+  {
+    "id": "32",
+    "query": "查询上海美食中地址包含'浦东'的店铺数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp410767701_上海美食1\" WHERE \"地址\" LIKE '%浦东%'",
+    "status": "Pass"
+  },
+  {
+    "id": "33",
+    "query": "查询成都二手房价中参考价高于15000的楼盘数量",
+    "generated_sql": "SELECT COUNT(*) AS 楼盘数量 FROM \"smp1652344996_成都二手房价\" WHERE \"参考价\" > 15000 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "34",
+    "query": "查询四川云闪付商户中商户品牌名称为'乡村基'的数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp1540391602_四川云闪付商户分布\" WHERE \"商户品牌名称\" = '乡村基'",
+    "status": "Pass"
+  },
+  {
+    "id": "35",
+    "query": "查询北京市小学中地址包含'朝阳区'的学校数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1261973732_北京市小学分布\" WHERE \"地址\" LIKE '%朝阳区%'",
+    "status": "Pass"
+  },
+  {
+    "id": "36",
+    "query": "查询京津土地利用面中Area_1大于50的记录数",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1052167523_京津土地利用面\" WHERE \"Area_1\" > 50 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "37",
+    "query": "查询中国2009各省GDP中GDP_2010不为0的省份数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1495180646_Chinese2009ProvincialGDP\" WHERE \"GDP_2010\" <> 0.0 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "38",
+    "query": "查询上海市景点中区域为'浦东新区'且种类为'景点'的数量",
+    "generated_sql": "SELECT COUNT(*) AS 数量 FROM \"smp171879899_上海市景点\" WHERE \"区域\" = '浦东新区' AND \"种类\" = '景点'",
+    "status": "Pass"
+  },
+  {
+    "id": "39",
+    "query": "查询北京住宅小区中朝向为'南'的小区数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp650996573_北京住宅小区分布\" WHERE \"朝向\" = '南' LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "40",
+    "query": "查询北京市轨道交通线路中所有不重复的标准名称",
+    "generated_sql": "SELECT DISTINCT \"标准名称\" FROM \"smp968461758_北京市轨道交通线路\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "41",
+    "query": "按区域统计上海市景点的数量,用景区数量作为结果字段名",
+    "generated_sql": "SELECT \"区域\" AS 区域, COUNT(*) AS 景区数量 FROM \"smp171879899_上海市景点\" GROUP BY \"区域\" ORDER BY 景区数量 DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "42",
+    "query": "统计北京住宅小区中每个年代的小区数量",
+    "generated_sql": "SELECT \"年代\", COUNT(*) AS 小区数量 FROM \"smp650996573_北京住宅小区分布\" GROUP BY \"年代\" ORDER BY \"年代\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "43",
+    "query": "统计京津土地利用面中每种LANDTYPE的总面积",
+    "generated_sql": "SELECT \"LANDTYPE\", SUM(\"Area\") AS total_area FROM \"smp1052167523_京津土地利用面\" GROUP BY \"LANDTYPE\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "44",
+    "query": "查询北京住宅小区中单价最高的5个小区名称和单价",
+    "generated_sql": "SELECT \"小区名\", \"单价\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"单价\" DESC LIMIT 5",
+    "status": "Pass"
+  },
+  {
+    "id": "45",
+    "query": "统计上海市景点中每种种类的景点数量",
+    "generated_sql": "SELECT \"种类\", COUNT(*) AS 景点数量 FROM \"smp171879899_上海市景点\" GROUP BY \"种类\" ORDER BY 景点数量 DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "46",
+    "query": "查询成都二手房价中每个行政区的平均参考价",
+    "generated_sql": "SELECT \"行政区\", AVG(\"参考价\") AS 平均参考价 FROM \"smp1652344996_成都二手房价\" GROUP BY \"行政区\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "47",
+    "query": "统计四川云闪付商户中每个城市的商户数量",
+    "generated_sql": "SELECT \"城市\", COUNT(*) AS 商户数量 FROM \"smp1540391602_四川云闪付商户分布\" GROUP BY \"城市\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "48",
+    "query": "查询北京市小学中每个学校类别的数量",
+    "generated_sql": "SELECT \"学校类别\", COUNT(*) AS 数量 FROM \"smp1261973732_北京市小学分布\" GROUP BY \"学校类别\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "49",
+    "query": "统计北京住宅小区中每种户型的数量",
+    "generated_sql": "SELECT \"户型\", COUNT(*) AS 数量 FROM \"smp650996573_北京住宅小区分布\" GROUP BY \"户型\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "50",
+    "query": "查询上海美食中每个评分的店铺数量",
+    "generated_sql": "SELECT \"评分\", COUNT(*) AS 店铺数量 FROM \"smp410767701_上海美食1\" GROUP BY \"评分\" ORDER BY \"评分\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "51",
+    "query": "统计成都市行政区划中每个区县的Shape_Area总和",
+    "generated_sql": "SELECT \"DISTNAME\", SUM(\"Shape_Area\") AS total_shape_area FROM \"smp1165309426_成都市行政区划\" WHERE \"CITYNAME\" = '成都市' GROUP BY \"DISTNAME\" ORDER BY total_shape_area DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "52",
+    "query": "查询北京住宅小区中总价在150到200之间的小区数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp650996573_北京住宅小区分布\" WHERE \"总价\" <= 200 AND \"总价\" >= 150 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "53",
+    "query": "统计京津土地利用面中每种LANDTYPE的平均面积",
+    "generated_sql": "SELECT \"LANDTYPE\", AVG(\"Area\") AS avg_area FROM \"smp1052167523_京津土地利用面\" GROUP BY \"LANDTYPE\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "54",
+    "query": "查询中国2009各省GDP中GDP_2009大于10000的省份数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1495180646_Chinese2009ProvincialGDP\" WHERE \"GDP_2009\" > 10000 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "55",
+    "query": "统计四川云闪付商户中每个场景的商户数量",
+    "generated_sql": "SELECT \"场景\" AS 场景, COUNT(*) AS 商户数量 FROM \"smp1540391602_四川云闪付商户分布\" GROUP BY \"场景\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "56",
+    "query": "查询上海市景点中纬度最高的前10个景点名称",
+    "generated_sql": "SELECT \"名称\" FROM \"smp171879899_上海市景点\" ORDER BY \"纬度\" DESC LIMIT 10",
+    "status": "Pass"
+  },
+  {
+    "id": "57",
+    "query": "统计北京住宅小区中每个朝向的平均单价",
+    "generated_sql": "SELECT \"朝向\", AVG(\"单价\") AS 平均单价 FROM \"smp650996573_北京住宅小区分布\" GROUP BY \"朝向\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "58",
+    "query": "查询成都二手房价中参考价最高的3个楼盘名称和参考价",
+    "generated_sql": "SELECT \"楼盘名称\", \"参考价\" FROM \"smp1652344996_成都二手房价\" ORDER BY \"参考价\" DESC LIMIT 3",
+    "status": "Pass"
+  },
+  {
+    "id": "59",
+    "query": "统计中国2009各省GDP中每个省的GDP_2009和GDP_2010的差值",
+    "generated_sql": "SELECT \"NAME\", \"GDP_2009\" - \"GDP_2010\" AS gdp_diff FROM \"smp1495180646_Chinese2009ProvincialGDP\" ORDER BY gdp_diff DESC LIMIT 50",
+    "status": "Fail",
+    "error": "Result Mismatch. Expected Len: 34, Got Len: 34"
+  },
+  {
+    "id": "60",
+    "query": "查询北京市小学中地址包含'海淀区'的前10所学校名称",
+    "generated_sql": "SELECT \"名称\" FROM \"smp1261973732_北京市小学分布\" WHERE \"地址\" LIKE '%海淀区%' LIMIT 10",
+    "status": "Pass"
+  },
+  {
+    "id": "61",
+    "query": "统计上海美食中评分大于等于4.8的店铺数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp410767701_上海美食1\" WHERE \"评分\" >= 4.8 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "62",
+    "query": "查询京津土地利用面中总面积最大的5种LANDTYPE及其面积",
+    "generated_sql": "SELECT \"LANDTYPE\", SUM(\"Area\") AS total_area FROM \"smp1052167523_京津土地利用面\" GROUP BY \"LANDTYPE\" ORDER BY total_area DESC LIMIT 5",
+    "status": "Error",
+    "error": "数据库执行错误: (psycopg2.errors.UndefinedColumn) column \"landtype\" does not exist\nLINE 1: SELECT LANDTYPE, SUM(Area) AS total_area FROM \"smp1052167523...\n               ^\n\n[SQL: SELECT LANDTYPE, SUM(Area) AS total_area FROM \"smp1052167523_京津土地利用面\" GROUP BY LANDTYPE ORDER BY total_area DESC LIMIT 5]\n(Background on this error at: https://sqlalche.me/e/20/f405)"
+  },
+  {
+    "id": "63",
+    "query": "统计北京住宅小区中年代在2000年及以后的小区数量",
+    "generated_sql": "SELECT COUNT(*) AS 小区数量 FROM \"smp650996573_北京住宅小区分布\" WHERE \"年代\" >= 2000 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "64",
+    "query": "查询上海市景点中经度最小的5个景点",
+    "generated_sql": "SELECT \"名称\", \"经度\" FROM \"smp171879899_上海市景点\" WHERE \"城市\" = '上海市' ORDER BY \"经度\" LIMIT 5",
+    "status": "Pass"
+  },
+  {
+    "id": "65",
+    "query": "统计成都市行政区划中CITYNAME为'成都市'的区县数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1165309426_成都市行政区划\" WHERE \"CITYNAME\" = '成都市'",
+    "status": "Pass"
+  },
+  {
+    "id": "66",
+    "query": "查询四川云闪付商户中门店名称包含'超市'的商户数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1540391602_四川云闪付商户分布\" WHERE \"门店名称\" LIKE '%超市%'",
+    "status": "Pass"
+  },
+  {
+    "id": "67",
+    "query": "统计北京市行政区划中每个区的childrenNum总和",
+    "generated_sql": "SELECT \"name\", SUM(\"childrenNum\") AS total_childrenNum FROM \"smp443066686_北京市行政区划\" WHERE \"level\" = 'district' GROUP BY \"name\" LIMIT 50",
+    "status": "Fail",
+    "error": "Result Mismatch. Expected Len: 16, Got Len: 1"
+  },
+  {
+    "id": "68",
+    "query": "查询中国省会城市中纬度最高的5个城市",
+    "generated_sql": "SELECT \"省会\", \"latitude\" FROM \"smp511044525_ChineseProvincialCapitals\" ORDER BY \"latitude\" DESC LIMIT 5",
+    "status": "Pass"
+  },
+  {
+    "id": "69",
+    "query": "统计北京住宅小区中面积大于80平方米的小区数量",
+    "generated_sql": "SELECT COUNT(*) AS count FROM \"smp650996573_北京住宅小区分布\" WHERE \"面积\" > 80 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "70",
+    "query": "查询上海市行政区划中adcode最大的3个区",
+    "generated_sql": "SELECT \"adcode\", \"name\" FROM \"smp3210229_上海市行政区划\" ORDER BY \"adcode\" DESC LIMIT 3",
+    "status": "Pass"
+  },
+  {
+    "id": "71",
+    "query": "统计成都二手房价中每个行政区的楼盘数量",
+    "generated_sql": "SELECT \"行政区\", COUNT(*) AS 楼盘数量 FROM \"smp1652344996_成都二手房价\" GROUP BY \"行政区\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "72",
+    "query": "查询京津土地利用面中LANDTYPE为'旱地'或'水田'的记录数",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1052167523_京津土地利用面\" WHERE \"LANDTYPE\" IN ('旱地', '水田') LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "73",
+    "query": "统计中国2009各省GDP中pop_2014大于5000的省份数量",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1495180646_Chinese2009ProvincialGDP\" WHERE \"pop_2014\" > 5000",
+    "status": "Fail"
+  },
+  {
+    "id": "74",
+    "query": "查询北京市小学中前20所学校的名称和地址",
+    "generated_sql": "SELECT \"名称\", \"地址\" FROM \"smp1261973732_北京市小学分布\" ORDER BY \"smpid\" LIMIT 20",
+    "status": "Fail"
+  },
+  {
+    "id": "75",
+    "query": "统计上海美食中每个地址的店铺数量(只显示前20个, 不需要排序)",
+    "generated_sql": "SELECT \"地址\", COUNT(*) AS 店铺数量 FROM \"smp410767701_上海美食1\" GROUP BY \"地址\" LIMIT 20",
+    "status": "Pass"
+  },
+  {
+    "id": "76",
+    "query": "查询北京住宅小区中单价在30000到50000之间且面积大于60的小区",
+    "generated_sql": "SELECT \"小区名\", \"单价\", \"面积\", \"户型\", \"朝向\", \"地址\" FROM \"smp650996573_北京住宅小区分布\" WHERE \"单价\" <= 50000 AND \"单价\" >= 30000 AND \"面积\" > 60 LIMIT 50",
+    "status": "Fail"
+  },
+  {
+    "id": "77",
+    "query": "统计四川云闪付商户中每个商户品牌名称的数量,按数量降序排列",
+    "generated_sql": "SELECT \"商户品牌名称\" AS 商户品牌名称, COUNT(*) AS 数量 FROM \"smp1540391602_四川云闪付商户分布\" GROUP BY \"商户品牌名称\" ORDER BY 数量 DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "78",
+    "query": "查询上海市景点中区域为'黄浦区'或'浦东新区'的景点数量",
+    "generated_sql": "SELECT COUNT(*) AS 景点数量 FROM \"smp171879899_上海市景点\" WHERE \"区域\" IN ('黄浦区', '浦东新区')",
+    "status": "Pass"
+  },
+  {
+    "id": "79",
+    "query": "统计成都市行政区划中每个区县的Shape_Length平均值",
+    "generated_sql": "SELECT \"DISTNAME\", AVG(\"SHAPE_LENG\") AS avg_shape_length FROM \"smp1165309426_成都市行政区划\" WHERE \"CITYNAME\" = '成都市' GROUP BY \"DISTNAME\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "80",
+    "query": "查询北京市轨道交通线路的所有标准名称,按名称排序",
+    "generated_sql": "SELECT \"标准名称\" FROM \"smp968461758_北京市轨道交通线路\" ORDER BY \"标准名称\" LIMIT 50",
+    "status": "Fail"
+  },
+  {
+    "id": "81",
+    "query": "统计京津土地利用面中Area_1大于平均值的记录数",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp1052167523_京津土地利用面\" WHERE \"Area_1\" > (SELECT AVG(\"Area_1\") FROM \"smp1052167523_京津土地利用面\") LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "82",
+    "query": "查询中国2009各省GDP中GDP_2009最高的前5个省份及其GDP值",
+    "generated_sql": "SELECT \"NAME\", \"GDP_2009\" FROM \"smp1495180646_Chinese2009ProvincialGDP\" ORDER BY \"GDP_2009\" DESC LIMIT 5",
+    "status": "Pass"
+  },
+  {
+    "id": "83",
+    "query": "统计北京住宅小区中每种楼层类型的平均单价,按平均单价降序",
+    "generated_sql": "SELECT \"楼层\", AVG(\"单价\") AS avg_danjia FROM \"smp650996573_北京住宅小区分布\" GROUP BY \"楼层\" ORDER BY avg_danjia DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "84",
+    "query": "查询上海美食中评分为5.0且地址包含'黄浦'的店铺",
+    "generated_sql": "SELECT \"店名\", \"地址\", \"评分\" FROM \"smp410767701_上海美食1\" WHERE \"地址\" LIKE '%黄浦%' AND \"评分\" = 5.0 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "85",
+    "query": "统计成都二手房价中参考价低于15000的楼盘数量按行政区分组",
+    "generated_sql": "SELECT \"行政区\", COUNT(*) AS 楼盘数量 FROM \"smp1652344996_成都二手房价\" WHERE \"参考价\" < 15000 GROUP BY \"行政区\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "86",
+    "query": "查询四川云闪付商户中城市为'成都市'且场景为'正餐'的商户数量",
+    "generated_sql": "SELECT COUNT(*) AS 商户数量 FROM \"smp1540391602_四川云闪付商户分布\" WHERE \"场景\" = '正餐' AND \"城市\" = '成都市'",
+    "status": "Pass"
+  },
+  {
+    "id": "87",
+    "query": "统计北京市小学中每个行政区的学校数量(通过地址字段判断)",
+    "generated_sql": "SELECT t2.\"name\" AS 行政区, COUNT(*) AS 学校数量 FROM \"smp1261973732_北京市小学分布\" AS t1 JOIN \"smp443066686_北京市行政区划\" AS t2 ON t1.\"地址\" LIKE CONCAT('%', t2.\"name\", '%') GROUP BY t2.\"name\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "88",
+    "query": "查询上海市景点中纬度和经度都在指定范围内的景点数量(纬度在 31.2 到 31.3 之间（含），且经度在 121.4 到 121.5 之间（含）)",
+    "generated_sql": "SELECT COUNT(*) FROM \"smp171879899_上海市景点\" WHERE \"纬度\" <= 31.3 AND \"纬度\" >= 31.2 AND \"经度\" <= 121.5 AND \"经度\" >= 121.4 LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "89",
+    "query": "统计中国省会城市的平均经纬度",
+    "generated_sql": "SELECT AVG(latitude) AS avg_latitude, AVG(longitude) AS avg_longitude FROM \"smp511044525_ChineseProvincialCapitals\"",
+    "status": "Pass"
+  },
+  {
+    "id": "90",
+    "query": "查询北京住宅小区中年代最早的10个小区及其年代",
+    "generated_sql": "SELECT \"小区名\", \"年代\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"年代\" LIMIT 10",
+    "status": "Pass"
+  },
+  {
+    "id": "91",
+    "query": "统计京津土地利用面中每种LANDTYPE的记录数和总面积",
+    "generated_sql": "SELECT \"LANDTYPE\", COUNT(*) AS record_count, SUM(\"Area\") AS total_area FROM \"smp1052167523_京津土地利用面\" GROUP BY \"LANDTYPE\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "92",
+    "query": "查询中国2009各省GDP中人均GDP最高的5个省份(用GDP_2014除以pop_2014)",
+    "generated_sql": "SELECT \"NAME\", \"GDP_2014\" / \"pop_2014\" AS per_capita_GDP FROM \"smp1495180646_Chinese2009ProvincialGDP\" WHERE \"pop_2014\" > 0 ORDER BY per_capita_GDP DESC LIMIT 5",
+    "status": "Pass"
+  },
+  {
+    "id": "93",
+    "query": "统计成都市行政区划中每个CITYNAME下的区县数量",
+    "generated_sql": "SELECT \"CITYNAME\", COUNT(\"DISTNAME\") AS district_count FROM \"smp1165309426_成都市行政区划\" WHERE \"CITYNAME\" = '成都市' GROUP BY \"CITYNAME\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "94",
+    "query": "查询北京住宅小区中单价最高的10个小区的详细信息",
+    "generated_sql": "SELECT \"小区名\", \"年代\", \"单价\", \"楼层\", \"户型\", \"朝向\", \"地址\", \"面积\", \"总价\", \"SmX\", \"SmY\" FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"单价\" DESC LIMIT 10",
+    "status": "Pass"
+  },
+  {
+    "id": "95",
+    "query": "统计上海美食中评分分布情况(每个评分的店铺数量),按评分降序",
+    "generated_sql": "SELECT \"评分\", COUNT(*) AS 店铺数量 FROM \"smp410767701_上海美食1\" GROUP BY \"评分\" ORDER BY \"评分\" DESC LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "96",
+    "query": "查询四川云闪付商户中每个城市每个场景的商户数量",
+    "generated_sql": "SELECT \"城市\", \"场景\", COUNT(*) AS 商户数量 FROM \"smp1540391602_四川云闪付商户分布\" GROUP BY \"城市\", \"场景\" ORDER BY \"城市\", \"场景\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "97",
+    "query": "统计上海市景点中每个区域每种种类的景点数量",
+    "generated_sql": "SELECT \"区域\", \"种类\", COUNT(*) AS 景点数量 FROM \"smp171879899_上海市景点\" GROUP BY \"区域\", \"种类\" ORDER BY \"区域\", \"种类\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "98",
+    "query": "查询成都二手房价中每个行政区参考价最高的楼盘",
+    "generated_sql": "SELECT \"行政区\", \"楼盘名称\", \"参考价\" FROM \"smp1652344996_成都二手房价\" WHERE (\"行政区\", \"参考价\") IN (SELECT \"行政区\", MAX(\"参考价\") FROM \"smp1652344996_成都二手房价\" GROUP BY \"行政区\") ORDER BY \"行政区\" LIMIT 50",
+    "status": "Pass"
+  },
+  {
+    "id": "99",
+    "query": "统计北京住宅小区中总价与面积的比率(单价计算验证),找出前10个最贵的",
+    "generated_sql": "SELECT \"小区名\", \"总价\" / \"面积\" AS 单价计算验证 FROM \"smp650996573_北京住宅小区分布\" ORDER BY \"总价\" DESC LIMIT 10",
+    "status": "Fail",
+    "error": "Result Mismatch. Expected Len: 10, Got Len: 10"
+  },
+  {
+    "id": "100",
+    "query": "查询中国2009各省GDP中2009到2014年GDP增长率最高的5个省份",
+    "generated_sql": "SELECT t1.\"NAME\", (t1.\"GDP_2014\" - t1.\"GDP_2009\") / t1.\"GDP_2009\" AS growth_rate FROM \"smp1495180646_Chinese2009ProvincialGDP\" AS t1 WHERE NOT t1.\"GDP_2014\" IS NULL AND t1.\"GDP_2009\" > 0 ORDER BY growth_rate DESC LIMIT 5",
+    "status": "Pass"
+  }
+]

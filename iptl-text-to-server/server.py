@@ -1,16 +1,13 @@
 from fastapi import HTTPException, BackgroundTasks
 
 from mcp_server.mcp_server import build_mcp_server_app
-from resources.config.config import DatabaseConfig, ModelConfig
+from resources.config.config import DatabaseConfig, ModelConfig, PromptsConfig
 from resources.config.config_save import update_global_db_config, get_global_db_config, update_global_model_config, \
-    get_global_model_config
-from tools.text2sql.engine_manager import EnginePool
-from tools.text2sql.factory import build_text2sql_config_from_global, warm_up_engine_task
-
+    get_global_model_config, update_global_prompts_config, get_global_prompts_config
+from resources.text2sql.factory import warm_up_engine_task
 import click
 import uvicorn
 from fastapi import FastAPI
-from pydantic import BaseModel
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html
@@ -116,6 +113,45 @@ async def get_model_config():
         "message": "获取配置成功",
         "data": config.to_dict()
     }
+
+@app.get("/api/text2/config/prompts", summary="获取模型提示词配置")
+async def get_prompts_config():
+    config = get_global_prompts_config()
+    if config:
+        data = config.to_dict()
+    else:
+        prompt_path = Path(__file__).resolve().parent / "resources" / "text2sql" / "prompts" / "text_to_sql.md"
+        try:
+            TEXT_TO_SQL_TMPL = prompt_path.read_text(encoding="utf-8")
+        except Exception:
+            TEXT_TO_SQL_TMPL = ""
+        data = {
+            "text_to_sql_prompt": TEXT_TO_SQL_TMPL
+        }
+
+    return {
+        "code": 200,
+        "message": "获取配置成功",
+        "data": data
+    }
+
+@app.post("/api/text2/config/prompts", summary="更新模型提示词配置")
+async def update_prompts_config(config: PromptsConfig, background_tasks: BackgroundTasks):
+    """
+    接收模型提示词配置并写入配置文件，并触发异步预热
+    """
+    try:
+        # 将Pydantic模型转为字典并写入配置文件
+        update_global_prompts_config(config.dict())
+        
+        # 触发异步预热
+        background_tasks.add_task(warm_up_engine_task)
+        
+        return {"code": 200, "message": "模型提示词配置写入成功", "data": config.dict()}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=f"参数错误: {str(e)}")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"服务器错误: {str(e)}")
 
 @click.command(help="启动服务")
 @click.option(

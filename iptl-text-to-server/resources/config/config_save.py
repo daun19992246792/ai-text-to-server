@@ -10,6 +10,7 @@ _config_lock = threading.Lock()
 # 私有变量：存储数据库配置（仅内部可修改）
 _db_config: Dict[str, Any] = {}
 _model_config: Dict[str, Any] = {}
+_prompts_config: Dict[str, Any] = {}
 
 
 # 封装为只读数据类（强化不可修改特性）
@@ -53,10 +54,23 @@ class ReadOnlyModelConfig:
             }
         }
 
+@dataclass(frozen=True)  # frozen=True 使实例属性不可修改
+class ReadOnlyPromptsConfig:
+    text_to_sql_prompt: str
+
+    # 转为字典（方便外部使用）
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "text_to_sql_prompt": self.text_to_sql_prompt,
+        }
+
+
 
 # 对外暴露的只读配置（Final保证变量本身不可重新赋值）
 GLOBAL_DB_CONFIG: Final[ReadOnlyDBConfig | None] = None
 GLOBAL_MODEL_CONFIG: Final[ReadOnlyModelConfig | None] = None
+GLOBAL_PROMPTS_CONFIG: Final[ReadOnlyPromptsConfig | None] = None
+
 
 
 def update_global_db_config(config: Dict[str, Any]) -> None:
@@ -117,3 +131,28 @@ def get_global_model_config() -> ReadOnlyModelConfig | None:
             basic_model=Model(**_model_config.get("basic_model")),
             embedding_model=Model(**_model_config.get("embedding_model")),
         )
+
+def update_global_prompts_config(config: Dict[str, Any]) -> None:
+    """
+    更新全局模型提示词配置（唯一可修改入口）
+    :param config: 模型提示词参数字典
+    """
+    global _prompts_config
+
+    # 加锁保证线程安全
+    with _config_lock:
+        # todo 验证必要参数
+
+        # 更新私有变量
+        _prompts_config = config.copy()
+
+def get_global_prompts_config() -> ReadOnlyPromptsConfig | None:
+    """
+    获取全局模型提示词配置（外部唯一读取入口）
+    :return: 模型提示词参数字典，未配置则返回None
+    """
+    with _config_lock:
+        if not _prompts_config:
+            return None
+        # 返回不可修改的实例
+        return ReadOnlyPromptsConfig(**_prompts_config)

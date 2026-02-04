@@ -1,8 +1,8 @@
-from tools.text_to_sql import query_database
+from resources.text2sql.service import ToolContainer
 # ================================================= 资源操作相关 start ===================================================
 
 # 用户登录查询
 async def text2sql(query: str):
-    return query_database(query)
+    return ToolContainer.query_database(query)
 
 current_locals=locals()
