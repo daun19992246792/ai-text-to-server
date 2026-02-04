@@ -44,10 +44,10 @@ class Text2SQLService:
             }
             dialect = mapping.get(dialect.lower(), dialect)
 
-            print(f"LLM生成的SQL: {generated_sql}")
+            # print(f"LLM生成的SQL: {generated_sql}")
             validated_sql = self._checker.validata(generated_sql, dialect=dialect)
 
-            print(f"验证后的SQL: {validated_sql}")
+            # print(f"验证后的SQL: {validated_sql}")
             results = self._executor.execute(validated_sql)
 
             # 截断结果中的过长字符串, 并且截断行数

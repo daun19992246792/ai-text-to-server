@@ -63,7 +63,7 @@ class Text2SQLEngine:
 
     def _build_query_engine(self):
         text_to_sql_prompt = self._build_text_to_sql_prompt()
-        print(text_to_sql_prompt)
+        # print(text_to_sql_prompt)
         self.query_engine = SQLTableRetrieverQueryEngine(
             sql_database=self.db_manager.sql_database,
             table_retriever=self.table_retriever,
@@ -71,7 +71,6 @@ class Text2SQLEngine:
             llm=self.llm,
             synthesize_response=False,
             sql_only=True,
-            verbose=True,
         )
 
     def apply_config(self, config: Text2SQLConfig):
