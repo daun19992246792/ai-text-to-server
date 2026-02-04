@@ -23,21 +23,21 @@ except ImportError as e:
 
 def get_service() -> Text2SQLService:
     # TODO: Please fill in your database configuration here
-    db_type = "postgresql"
-    db_user = "agentx"
-    db_password = "agentx_2025"
-    db_host = "172.16.168.199"
-    db_port = "5432"
-    db_name = "iportal_structure_data"
+    db_type = ""
+    db_user = ""
+    db_password = ""
+    db_host = ""
+    db_port = ""
+    db_name = ""
 
     # TODO: Please fill in your Model configuration here
-    llm_model_name = "qwen3-30b-a3b-instruct-2507"
-    llm_api_key = "gpustack_ccd8e2870ae80da1_1643851e4c7ccc79d3600cd331872316"
-    llm_api_base = "http://192.168.102.253:8000/v1"
+    llm_model_name = ""
+    llm_api_key = ""
+    llm_api_base = ""
 
-    embedding_model_name = "bge-m3"
-    embedding_api_key = "gpustack_ccd8e2870ae80da1_1643851e4c7ccc79d3600cd331872316"
-    embedding_api_base = "http://192.168.102.253:8000/v1"
+    embedding_model_name = ""
+    embedding_api_key = ""
+    embedding_api_base = ""
 
     if db_type == "sqlite":
         db_uri = f"sqlite:///{db_name}"
